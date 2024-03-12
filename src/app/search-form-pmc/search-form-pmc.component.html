@@ -1,0 +1,34 @@
+<h1>{{Title}}</h1>
+<div>
+  <form role="search" name="PMCForm" (ngSubmit)="onSubmit()">
+    <div >
+      <div class="form-row">
+        <label for="search_text">Поиск:*</label>
+        <input class="form-control me-2" type="search" [(ngModel)]="search.text" id="search_text" name="search_text" placeholder="текст" required>
+      </div>
+      <div class="form-row ">
+        <div class="col-4 form-column">
+          <label for="search_quartile">Фильтр по квартилям:</label>
+          <select id="search_quartile" name="search_quartile" [(ngModel)]="search.quartile">
+            <option value="0">None</option>
+            <option value="1">Q1-Q4</option>
+            <option value="3">Q1-Q3</option>
+            <option value="7">Q1-Q2</option>
+            <option value="15">Q1 only</option>
+          </select>
+        </div>
+        <div class="col-4 form-column">
+          <label for="search_country">Страна журнала:</label>
+          <select id="search_country" name="search_country" [(ngModel)]="search.country">
+            <option *ngFor="let country of countries" [value]="country">{{country}}</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <div class="center">
+          <button class="btn btn-outline-success" type="submit">Поиск</button>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
