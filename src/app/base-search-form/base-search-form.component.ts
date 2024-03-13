@@ -12,9 +12,11 @@ export class BaseSearchFormComponent {
   protected Title = "Базовый компонент формы";
   protected countries = jsonData.countries;
   protected formSubmitted = false;
-  protected data: any;
+  protected data: any = null;
   protected error: string = '';
   protected loading: boolean = false;
+  protected data_models: any[] = [];
+  protected total: number = 0;
 
   protected myForm = new FormGroup({
     quartile: new FormControl('0', {nonNullable: true, validators: Validators.required}),

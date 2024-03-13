@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { BaseSearchFormComponent } from '../base-search-form/base-search-form.component';
 import {ApiPmcService} from "../services/api-pmc.service";
+import ModelPMC from "../models/ModelPMC";
 
 @Component({
   selector: 'app-search-form-pmc',
@@ -20,9 +21,9 @@ export class SearchFormPmcComponent extends BaseSearchFormComponent {
 
     if (this.myForm.valid) {
       console.log(this.myForm.value)
-      let text_val = this.myForm.controls.text.value
-      let quartile_val = this.myForm.controls.quartile.value
-      let country_val = this.myForm.controls.country.value;
+      const text_val = this.myForm.controls.text.value
+      const quartile_val = this.myForm.controls.quartile.value
+      const country_val = this.myForm.controls.country.value;
       this.fetchData(text_val, +quartile_val, country_val);
     }
   }
@@ -32,17 +33,45 @@ export class SearchFormPmcComponent extends BaseSearchFormComponent {
     this.data = null;
     this.error = '';
     this.loading = true;
+    this.data_models = [];
+    this.total = 0;
 
     this.apiPmcService.fetchData(search_text, filter_quartile, filter_country, size, page).subscribe({
       next: (response) => {
         this.data = response;
         this.error = '';
         this.loading = false;
+
+        this.total = this.data.total.value;
+        this.data.hits.forEach((element: any) => {
+          const source = element._source;
+          const obj = new ModelPMC(
+            {
+              "journal": source.journal,
+              "PMID": source.PMID,
+              "PMCID": source.PMCID,
+              "DOI": source.DOI,
+              "Title": source.Title,
+              "Author": source.Author,
+              "date": source.date,
+              "date_epub": source.date_epub,
+              "Abstract": source.Abstract,
+              "Text_full": source.Text_full,
+              "Glossary": source.Glossary,
+              "Categories": source.Categories,
+              "Affiliations": source.Affiliations,
+              "book": source.book,
+              "Ref_ids": source.Ref_ids,
+              "References": source.References,
+            });
+          this.data_models.push(obj);
+        });
+
       },
       error: (error) => {
         console.error('Error fetching data:', error);
-        this.error = 'Error fetching data';
         this.data = null;
+        this.error = 'Error fetching data';
         this.loading = false;
       }
     });
