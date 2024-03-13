@@ -9,9 +9,6 @@ import {ApiPmcService} from "../services/api-pmc.service";
 })
 export class SearchFormPmcComponent extends BaseSearchFormComponent {
 
-  data: any;
-  error: string = '';
-  loading: boolean = false;
   constructor(private apiPmcService: ApiPmcService) {
     super();
 
@@ -30,7 +27,7 @@ export class SearchFormPmcComponent extends BaseSearchFormComponent {
     }
   }
 
-  public fetchData(search_text: string, filter_quartile: number = 0, filter_country: string = '', size: number = 20, page: number = 0) {
+  protected override fetchData(search_text: string, filter_quartile: number = 0, filter_country: string = '', size: number = 20, page: number = 0) {
 
     this.data = null;
     this.error = '';

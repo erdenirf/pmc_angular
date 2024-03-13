@@ -8,11 +8,13 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
   styleUrl: './base-search-form.component.scss'
 })
 export class BaseSearchFormComponent {
+
   protected Title = "Базовый компонент формы";
-
   protected countries = jsonData.countries;
-
   protected formSubmitted = false;
+  protected data: any;
+  protected error: string = '';
+  protected loading: boolean = false;
 
   protected myForm = new FormGroup({
     quartile: new FormControl('0', {nonNullable: true, validators: Validators.required}),
@@ -20,7 +22,7 @@ export class BaseSearchFormComponent {
     country: new FormControl('', {nonNullable: true}),
   });
 
-  public onSubmitButton() {
+  protected onSubmitButton() {
     this.formSubmitted = true;
 
     if (this.myForm.valid) {
@@ -28,4 +30,6 @@ export class BaseSearchFormComponent {
     }
 
   }
+
+  protected fetchData(search_text: string, filter_quartile: number = 0, filter_country: string = '', size: number = 20, page: number = 0) { }
 }
