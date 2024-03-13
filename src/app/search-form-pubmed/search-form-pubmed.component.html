@@ -2,8 +2,11 @@
 <div>
   <div [formGroup]="myForm">
     <div class="form-row">
-      <label for="search_text">Поиск:*</label>
+      <label for="search_text">Поиск:<span class="red-color">*</span></label>
       <input class="form-control me-2" type="search" formControlName="text" id="search_text" name="search_text" placeholder="текст" required>
+      @if ((!myForm.controls.text.valid && myForm.controls.text.touched) || (!myForm.valid && formSubmitted)) {
+        <small class="red-color">Это обязательное поле для заполнения.</small>
+      }
     </div>
     <div class="form-row ">
       <div class="col-4 form-column">
@@ -25,7 +28,7 @@
     </div>
     <div>
       <div class="center">
-        <button class="btn btn-outline-success" type="submit">Поиск</button>
+        <button class="btn btn-outline-success" (click)="onSubmitButton()">Поиск</button>
       </div>
     </div>
   </div>
