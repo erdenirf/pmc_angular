@@ -13,8 +13,4 @@ export class SearchFormPmcComponent extends BaseSearchFormComponent {
     this.Title = "Локальный поиск PMC";
   }
 
-  public onSubmit() {
-    console.log('Submitted!', this.search);
-  }
-
 }
