@@ -1,7 +1,7 @@
 import {Component} from '@angular/core';
 import {BaseSearchFormComponent} from "../base-search-form/base-search-form.component";
 import {ApiPubmedService} from "../services/api-pubmed.service";
-import PubmedJson from "../models/ModelPubMed";
+import ModelPubmedJson from "../models/ModelPubMed";
 
 @Component({
   selector: 'app-search-form-pubmed',
@@ -9,7 +9,7 @@ import PubmedJson from "../models/ModelPubMed";
   styleUrl: './search-form-pubmed.component.scss'
 })
 export class SearchFormPubmedComponent extends BaseSearchFormComponent {
-  Model: PubmedJson = new PubmedJson();
+  Model: ModelPubmedJson = new ModelPubmedJson();
   constructor(private apiPubmedService: ApiPubmedService) {
     super();
 
@@ -40,7 +40,7 @@ export class SearchFormPubmedComponent extends BaseSearchFormComponent {
         this.error = '';
         this.loading = false;
 
-        this.Model = Object.assign(new PubmedJson(), this.data);
+        this.Model = Object.assign(new ModelPubmedJson(), this.data);
 
       },
       error: (error) => {

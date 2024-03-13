@@ -136,7 +136,7 @@ interface IPubmedJson {
   hits: IHits[],
   get_1D_sources(): IModel[],
 }
-export default class PubmedJson implements IPubmedJson{
+export default class ModelPubmedJson implements IPubmedJson{
   hits: IHits[] = [];
   max_score: number = 0;
   total: ITotal = {
