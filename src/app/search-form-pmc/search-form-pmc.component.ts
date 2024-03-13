@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { BaseSearchFormComponent } from '../base-search-form/base-search-form.component';
 import {ApiPmcService} from "../services/api-pmc.service";
-import ModelPMC from "../models/ModelPMC";
+import ModelPMCJson from "../models/ModelPMC";
 
 @Component({
   selector: 'app-search-form-pmc',
@@ -9,9 +9,7 @@ import ModelPMC from "../models/ModelPMC";
   styleUrl: './search-form-pmc.component.scss'
 })
 export class SearchFormPmcComponent extends BaseSearchFormComponent {
-  public data_models: any[] = [];
-  public total = 0;
-
+  Model: ModelPMCJson = new ModelPMCJson();
   constructor(private apiPmcService: ApiPmcService) {
     super();
 
@@ -35,39 +33,13 @@ export class SearchFormPmcComponent extends BaseSearchFormComponent {
     this.data = null;
     this.error = '';
     this.loading = true;
-    this.data_models = [];
-    this.total = 0;
 
     this.apiPmcService.fetchData(search_text, filter_quartile, filter_country, size, page).subscribe({
       next: (response) => {
         this.data = response;
         this.error = '';
         this.loading = false;
-
-        this.total = this.data.total.value;
-        this.data.hits.forEach((element: any) => {
-          const source = element._source;
-          const obj = new ModelPMC(
-            {
-              "journal": source.journal,
-              "PMID": source.PMID,
-              "PMCID": source.PMCID,
-              "DOI": source.DOI,
-              "Title": source.Title,
-              "Author": source.Author,
-              "date": source.date,
-              "date_epub": source.date_epub,
-              "Abstract": source.Abstract,
-              "Text_full": source.Text_full,
-              "Glossary": source.Glossary,
-              "Categories": source.Categories,
-              "Affiliations": source.Affiliations,
-              "book": source.book,
-              "Ref_ids": source.Ref_ids,
-              "References": source.References,
-            });
-          this.data_models.push(obj);
-        });
+        this.Model = Object.assign(new ModelPMCJson(), this.data);
 
       },
       error: (error) => {
@@ -78,5 +50,4 @@ export class SearchFormPmcComponent extends BaseSearchFormComponent {
       }
     });
   }
-
 }

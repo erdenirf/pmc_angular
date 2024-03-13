@@ -13,7 +13,7 @@ export class SearchFormPubmedComponent extends BaseSearchFormComponent {
   constructor(private apiPubmedService: ApiPubmedService) {
     super();
 
-    this.Title = "Локальный поиск Pubmed";
+    this.Title = "Локальный поиск PubMed";
   }
 
   public override onSubmitButton() {
@@ -39,7 +39,6 @@ export class SearchFormPubmedComponent extends BaseSearchFormComponent {
         this.data = response;
         this.error = '';
         this.loading = false;
-
         this.Model = Object.assign(new ModelPubmedJson(), this.data);
 
       },

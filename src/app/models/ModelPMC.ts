@@ -1,136 +1,162 @@
-export default class ModelPMC {
-  PMID;
-  PMCID;
-  Title;
-  Categories;
-  date_epub;
-  Abstract;
-  Author_initials;
-  Author_fullname;
-  Affiliations;
-  Text_full;
-  Glossary;
-  journal_nlm;
-  journal_longname;
-  journal_ISSNP;
-  journal_ISSNE;
-  DOI;
-  book_volume;
-  book_issue;
-  book_first_page;
-  book_last_page;
-  date_year;
-  date_month;
-  date_day;
-  Ref_ids;
-  References;
+import {IModel} from "./IModel";
 
-  constructor({
-                journal,
-                PMID,
-                PMCID,
-                DOI,
-                Title,
-                Author,
-                date,
-                date_epub,
-                Abstract,
-                Text_full,
-                Glossary,
-                Categories,
-                Affiliations,
-                book,
-                Ref_ids,
-                References
-              }: {
-    journal: any,
-    PMID: any,
-    PMCID: any,
-    DOI: any,
-    Title: any,
-    Author: any,
-    date: any,
-    date_epub: any,
-    Abstract: any,
-    Text_full: any,
-    Glossary: any,
-    Categories: any,
-    Affiliations: any,
-    book: any,
-    Ref_ids: any,
-    References: any
-  }) {
-    this.PMID = PMID;
-    this.PMCID = PMCID;
-    this.Title = Title;
-    this.Categories = Categories;
-    this.date_epub = date_epub;
-    this.Abstract = Abstract;
-    this.Author_initials = this.getAuthorsInitials(Author);
-    this.Author_fullname = this.getAuthorsFullName(Author);
-    this.Affiliations = this.getAffiliations(Affiliations);
-    this.Text_full = Text_full;
-    this.Glossary = this.getGlossary(Glossary);
-    this.journal_nlm = journal.nlm;
-    this.journal_longname = journal.longname;
-    this.journal_ISSNP = journal.ISSNP;
-    this.journal_ISSNE = journal.ISSNE;
-    this.DOI = DOI;
-    this.book_volume = book.volume;
-    this.book_issue = book.issue;
-    this.book_first_page = book.first_page;
-    this.book_last_page = book.last_page;
-    this.date_year = date.year;
-    this.date_month = date.month;
-    this.date_day = date.day;
-    this.Ref_ids = this.getRefIds(Ref_ids);
-    this.References = this.getReferences(References);
-  }
-
-  getAuthorsInitials(array: any[]) {
-    let result: string[] = [];
-    array.forEach(element => {
-      result.push(element.initials);
-    });
-    return result.join(", ");
-  }
-
-  getAuthorsFullName(array: any[]) {
-    let result: string[] = [];
-    array.forEach((element) => {
-      result.push(element.fullname);
-    });
-    return result.join(", ");
-  }
-
-  getAffiliations(array: any[]) {
-    let result: string[] = [];
-    array.forEach((element: {institute: string}) => {
-      result.push(element.institute);
-    });
-    return result.join("; ");
-  }
-
-  getGlossary(array: any[]) {
-    let result: string[] = [];
-    array.forEach((element: { definition: string }) => {
-      result.push(element.definition);
-    });
-    return result.join("; ");
-  }
-
-  getRefIds(array: any[]) {
-    let result: string[] = [];
-    array.forEach((element: { pubmed_id: number }) => {
-      result.push(element.pubmed_id.toString());
+interface IJournal {
+  nlm?: string,
+  longname?: string,
+  ISSNP?: string,
+  ISSNE?: string,
+}
+interface IDate {
+  year: number,
+  month?: number,
+  day?: number,
+}
+interface IAuthor {
+  fullname?: string,
+  initials?: string,
+}
+interface IDefinition {
+  definition?: string,
+}
+interface IInstitute {
+  institute?: string,
+}
+interface IBook {
+  volume?: string,
+  issue?: string,
+  first_page?: string,
+  last_page?: string,
+}
+interface IPubmedid {
+  pubmed_id: number,
+}
+interface IPaper {
+  paper?: string,
+}
+interface IModelPMC {
+  journal: IJournal,
+  PMID?: number,
+  PMCID: string,
+  DOI?: string,
+  Title?: string,
+  Author?: IAuthor[],
+  date: IDate,
+  date_epub: string,
+  Abstract?: string,
+  Text_full?: string,
+  Glossary?: IDefinition[],
+  Categories?: string,
+  Affiliations?: IInstitute[],
+  book: IBook,
+  Ref_ids?: IPubmedid[],
+  References?: IPaper[],
+}
+interface ITotal {
+  value: number,
+  relation: string,
+}
+interface IHits {
+  _index: string,
+  _id: string,
+  _score: number,
+  _source: IModelPMC,
+}
+interface IPMCJson {
+  total: ITotal,
+  max_score: number,
+  hits: IHits[],
+  get_1D_sources(): IModel[],
+}
+export default class ModelPMCJson implements IPMCJson{
+  hits: IHits[] = [];
+  max_score: number = 0;
+  total: ITotal = {
+    value: 0,
+    relation: "gte",
+  };
+  get_1D_sources(): IModel[] {
+    let result: IModel[] = [];
+    this.hits.forEach(element => {
+      let model: IModel = {
+        "Abstract": element._source.Abstract ?? "",
+        "Affiliations": this.get_Affiliations(element._source),
+        "Author_fullname": this.get_Author_fullname(element._source),
+        "Author_initials": this.get_Author_initials(element._source),
+        "Categories": element._source.Categories ?? "",
+        "DOI": element._source.DOI ?? "",
+        "Glossary": this.get_Glossary(element._source),
+        "PMCID": element._source.PMCID,
+        "PMID": element._source.PMID ?? 0,
+        "Ref_ids": this.get_RefIds(element._source),
+        "References": this.get_References(element._source),
+        "Text_full": element._source.Text_full ?? "",
+        "Title": element._source.Title ?? "",
+        "book_first_page": element._source.book.first_page ?? "",
+        "book_issue": element._source.book.issue ?? "",
+        "book_last_page": element._source.book.last_page ?? "",
+        "book_volume": element._source.book.volume ?? "",
+        "date_day": element._source.date.day?.toString() ?? "",
+        "date_epub": element._source.date_epub,
+        "date_month": element._source.date.month?.toString() ?? "",
+        "date_year": element._source.date.year.toString(),
+        "journal_ISSNE": element._source.journal.ISSNE ?? "",
+        "journal_ISSNP": element._source.journal.ISSNP ?? "",
+        "journal_longname": element._source.journal.longname ?? "",
+        "journal_nlm": element._source.journal.nlm ?? "",
+      };
+      result.push(model);
     });
     return result;
   }
-
-  getReferences(array: any[]) {
+  private get_Affiliations(model: IModelPMC): string {
     let result: string[] = [];
-    array.forEach((element: { paper: string; }) => {
-      result.push(element.paper);
+    model.Affiliations?.forEach(element => {
+      if (element.institute != null) {
+        result.push(element.institute);
+      }
+    });
+    return result.join("; ");
+  }
+  private get_Author_fullname(model: IModelPMC): string {
+    let result: string[] = [];
+    model.Author?.forEach(element => {
+      if (element.fullname != null) {
+        result.push(element.fullname);
+      }
+    });
+    return result.join(", ");
+  }
+  private get_Author_initials(model: IModelPMC): string {
+    let result: string[] = [];
+    model.Author?.forEach(element => {
+      if (element.initials != null) {
+        result.push(element.initials);
+      }
+    });
+    return result.join(", ");
+  }
+  private get_Glossary(model: IModelPMC): string {
+    let result: string[] = [];
+    model.Glossary?.forEach(element => {
+      if (element.definition != null) {
+        result.push(element.definition);
+      }
+    });
+    return result.join("; ");
+  }
+  private get_RefIds(model: IModelPMC): number[] {
+    let result: number[] = [];
+    model.Ref_ids?.forEach(element => {
+      result.push(element.pubmed_id);
+    });
+    return result;
+  }
+  private get_References(model: IModelPMC): string[] {
+    let result: string[] = [];
+    model.References?.forEach(element => {
+      if (element.paper != null) {
+        result.push(element.paper);
+      }
     });
     return result;
   }
