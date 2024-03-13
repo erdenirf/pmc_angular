@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import * as jsonData from './countries.json';
+import {FormControl, FormGroup, Validators} from "@angular/forms";
 
 @Component({
   selector: 'app-base-search-form',
@@ -9,11 +10,22 @@ import * as jsonData from './countries.json';
 export class BaseSearchFormComponent {
   protected Title = "Базовый компонент формы";
 
-  protected search = {
-    quartile: 0,
-    text: '',
-    country: ''
-  };
-
   protected countries = jsonData.countries;
+
+  protected formSubmitted = false;
+
+  protected myForm = new FormGroup({
+    quartile: new FormControl('0', Validators.required),
+    text: new FormControl('', Validators.required),
+    country: new FormControl(''),
+  });
+
+  public onSubmitButton() {
+    this.formSubmitted = true;
+
+    if (this.myForm.valid) {
+      console.log(this.myForm.value)
+    }
+
+  }
 }

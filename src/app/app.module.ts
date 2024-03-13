@@ -1,24 +1,30 @@
-import { FormsModule } from '@angular/forms';
+import {ReactiveFormsModule} from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { HomeComponent } from './home/home.component';
 import { BaseSearchFormComponent } from './base-search-form/base-search-form.component';
 import { SearchFormPmcComponent } from './search-form-pmc/search-form-pmc.component';
+import { SearchFormPubmedComponent } from './search-form-pubmed/search-form-pubmed.component';
+import { BaseApiFetchComponent } from './base-api-fetch/base-api-fetch.component';
+import { ApiFetchPmcComponent } from './api-fetch-pmc/api-fetch-pmc.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    HomeComponent,
     BaseSearchFormComponent,
-    SearchFormPmcComponent
+    SearchFormPmcComponent,
+    SearchFormPubmedComponent,
+    BaseApiFetchComponent,
+    ApiFetchPmcComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    ReactiveFormsModule,
+    HttpClientModule
   ],
   providers: [
     provideClientHydration()
