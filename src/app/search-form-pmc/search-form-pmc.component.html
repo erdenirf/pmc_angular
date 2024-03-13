@@ -33,3 +33,12 @@
     </div>
   </div>
 </div>
+<div>
+  <div *ngIf="data">
+    <!-- Здесь ваша логика отображения данных -->
+    <pre>{{ data | json }}</pre>
+  </div>
+  <div *ngIf="error">
+    {{ error }}
+  </div>
+</div>

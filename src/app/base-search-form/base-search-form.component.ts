@@ -15,9 +15,9 @@ export class BaseSearchFormComponent {
   protected formSubmitted = false;
 
   protected myForm = new FormGroup({
-    quartile: new FormControl('0', Validators.required),
-    text: new FormControl('', Validators.required),
-    country: new FormControl(''),
+    quartile: new FormControl('0', {nonNullable: true, validators: Validators.required}),
+    text: new FormControl('', {nonNullable: true, validators: Validators.required}),
+    country: new FormControl('', {nonNullable: true}),
   });
 
   public onSubmitButton() {
