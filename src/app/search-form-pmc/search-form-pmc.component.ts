@@ -9,6 +9,8 @@ import ModelPMC from "../models/ModelPMC";
   styleUrl: './search-form-pmc.component.scss'
 })
 export class SearchFormPmcComponent extends BaseSearchFormComponent {
+  public data_models: any[] = [];
+  public total = 0;
 
   constructor(private apiPmcService: ApiPmcService) {
     super();

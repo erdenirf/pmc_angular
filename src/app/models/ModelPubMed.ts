@@ -1,157 +1,273 @@
-export default class ModelPubMed {
-  PMID;
-  PMCID;
-  Title;
-  Categories;
-  date_epub;
-  Abstract;
-  Author_initials;
-  Author_fullname;
-  Affiliations;
-  Text_full;
-  Glossary;
-  journal_nlm;
-  journal_longname;
-  journal_ISSNP;
-  journal_ISSNE;
-  DOI;
-  book_volume;
-  book_issue;
-  book_first_page;
-  book_last_page;
-  date_year;
-  date_month;
-  date_day;
-  Ref_ids;
-  References;
+import {IModel} from './IModel';
 
-  constructor({MedlineCitation, PubmedData, DateEntrez
-  }: {
-    MedlineCitation: any, PubmedData: any, DateEntrez: any
-  }) {
-    this.PMID = MedlineCitation.PMID;
-    this.PMCID = this.getPMCID(PubmedData);
-    this.Title = MedlineCitation.Article.ArticleTitle;
-    this.Categories = this.getCategories(MedlineCitation);
-    this.date_epub = DateEntrez;
-    this.Abstract = this.getAbstract(MedlineCitation);
-    this.Author_initials = this.getAuthorsInitials(MedlineCitation);
-    this.Author_fullname = this.getAuthorsFullName(MedlineCitation);
-    this.Affiliations = this.getAffiliations(MedlineCitation);
-    this.Text_full = '';
-    this.Glossary = this.getGlossary(MedlineCitation);
-    this.journal_nlm = MedlineCitation.Article.Journal.ISOAbbreviation;
-    this.journal_longname = MedlineCitation.Article.Journal.Title;
-    this.journal_ISSNP = MedlineCitation.Article.Journal.ISSN_Print;
-    this.journal_ISSNE = MedlineCitation.Article.Journal.ISSN_Electronic;
-    this.DOI = this.getDOI(PubmedData);
-    this.book_volume = MedlineCitation.Article.Journal.JournalIssue.Volume;
-    this.book_issue = MedlineCitation.Article.Journal.JournalIssue.Issue;
-    this.book_first_page = MedlineCitation.Article.Pagination;
-    this.book_last_page = '';
-    this.date_year = MedlineCitation.Article.Journal.JournalIssue.PubDate.Year;
-    this.date_month = MedlineCitation.Article.Journal.JournalIssue.PubDate.Month;
-    this.date_day = MedlineCitation.Article.Journal.JournalIssue.PubDate.Day;
-    this.Ref_ids = this.getRefIds(PubmedData);
-    this.References = this.getReferences(PubmedData);
-  }
-
-  getPMCID(PubmedData: any): string {
-    PubmedData.ArticleIdList.forEach((articleID: any) => {
-      if (articleID.IdType == 'pmc') {
-        return articleID.text;
-      }
+interface IDateRevised {
+  Year: string,
+  Month: string,
+  Day: string
+}
+interface IPubDate {
+  Year?: string,
+  Month?: string,
+  Day?: string,
+}
+interface IJournalIssue {
+  Volume?: string,
+  Issue?: string,
+  PubDate: IPubDate,
+}
+interface IJournal {
+  ISOAbbreviation: string,
+  Title: string,
+  JournalIssue: IJournalIssue,
+  ISSN_Print?: string,
+  ISSN_Electronic?: string,
+}
+interface IAffiliation {
+  Affiliation?: string,
+}
+interface IAuthor {
+  LastName?: string,
+  ForeName?: string,
+  Initials?: string,
+  AffiliationInfo?: IAffiliation[],
+}
+interface IELocationID {
+  EIdType?: string,
+  text?: string,
+}
+interface IPublicationType {
+  UI: string,
+  text: string,
+}
+interface IAbstractText {
+  Label?: string,
+  NlmCategory?: string,
+  text: string,
+}
+interface IArticle {
+  Journal: IJournal,
+  ArticleTitle: string,
+  Pagination?: string,
+  ELocationID?: IELocationID[],
+  AbstractText?: IAbstractText[],
+  CopyrightInformation?: string,
+  AuthorList?: IAuthor[],
+  PublicationTypeList: IPublicationType[]
+}
+interface IMedlineJournalInfo {
+  MedlineTA: string,
+  NlmUniqueID: string,
+  Country?: string,
+  ISSNLinking?: string,
+}
+interface IMeshHeading {
+  UI?: string,
+  text?: string,
+}
+interface IKeyword {
+  text?: string,
+}
+interface ICommentsCorrections {
+  RefType?: string,
+  RefSource?: string,
+  PMID: string,
+}
+interface INameOfSubstance {
+  UI: string,
+  text: string,
+}
+interface IChemical {
+  RegistryNumber: string,
+  NameOfSubstance: INameOfSubstance,
+}
+interface IMedlineCitation {
+  PMID: number,
+  DateRevised: IDateRevised,
+  Article: IArticle,
+  MedlineJournalInfo: IMedlineJournalInfo,
+  MeshHeadingList?: IMeshHeading[],
+  KeywordList?: IKeyword[],
+  CommentsCorrectionsList?: ICommentsCorrections[],
+  ChemicalList?: IChemical[],
+}
+interface IPubMedPubDate {
+  Year: string,
+  Month: string,
+  Day: string,
+  Hour: string,
+  Minute: string,
+  PubStatus?: string,
+}
+interface IArticleId {
+  IdType: string,
+  text: string,
+}
+interface IArticleId {
+  IdType: string,
+  text: string,
+}
+interface IReference {
+  Citation: string,
+  ArticleIdList: IArticleId[],
+}
+interface IPubmedData {
+  History: IPubMedPubDate[],
+  ArticleIdList: IArticleId[],
+  ReferenceList?: IReference[],
+}
+interface IModelPubMed {
+  MedlineCitation: IMedlineCitation,
+  PubmedData: IPubmedData,
+  DateEntrez: string,
+}
+interface IHits {
+  _index: string,
+  _id: string,
+  _score: number,
+  _source: IModelPubMed,
+}
+interface ITotal {
+  value: number,
+  relation: string,
+}
+interface IPubmedJson {
+  total: ITotal,
+  max_score: number,
+  hits: IHits[],
+  get_1D_sources(): IModel[],
+}
+export default class PubmedJson implements IPubmedJson{
+  hits: IHits[] = [];
+  max_score: number = 0;
+  total: ITotal = {
+    value: 0,
+    relation: "gte",
+  };
+  public get_1D_sources(): IModel[] {
+    let result: IModel[] = [];
+    this.hits.forEach(element => {
+      let model: IModel = {
+        Abstract: this.get_Abstract(element._source),
+        Affiliations: this.get_Affiliations(element._source),
+        Author_fullname: this.get_Author_fullname(element._source),
+        Author_initials: this.get_Author_initials(element._source),
+        Categories: this.get_Categories(element._source),
+        DOI: this.get_DOI(element._source),
+        Glossary: this.get_Glossary(element._source),
+        PMCID: this.get_PMCID(element._source),
+        PMID: element._source.MedlineCitation.PMID,
+        Ref_ids: this.get_RefIds(element._source),
+        References: this.get_References(element._source),
+        Text_full: "",
+        Title: element._source.MedlineCitation.Article.ArticleTitle,
+        book_first_page: element._source.MedlineCitation.Article.Pagination ?? "",
+        book_issue: element._source.MedlineCitation.Article.Journal.JournalIssue.Issue ?? "",
+        book_last_page: "",
+        book_volume: element._source.MedlineCitation.Article.Journal.JournalIssue.Volume ?? "",
+        date_day: element._source.MedlineCitation.Article.Journal.JournalIssue.PubDate.Day ?? "",
+        date_epub: element._source.DateEntrez,
+        date_month: element._source.MedlineCitation.Article.Journal.JournalIssue.PubDate.Month ?? "",
+        date_year: element._source.MedlineCitation.Article.Journal.JournalIssue.PubDate.Year ?? "",
+        journal_ISSNE: element._source.MedlineCitation.Article.Journal.ISSN_Electronic ?? "",
+        journal_ISSNP: element._source.MedlineCitation.Article.Journal.ISSN_Print ?? "",
+        journal_longname: element._source.MedlineCitation.Article.Journal.Title,
+        journal_nlm: element._source.MedlineCitation.Article.Journal.ISOAbbreviation,
+      };
+      result.push(model);
     });
-    return '';
+    return result;
   }
-
-  getCategories(MedlineCitation: any) {
-    var result: string[] = [];
-    MedlineCitation.Article.PublicationTypeList.forEach((pubType: any) => {
-      result.push(pubType.text);
-    });
-    return result.join(" ");
-  }
-
-  getAbstract(MedlineCitation:any) {
-    var result: string[] = [];
-    MedlineCitation.Article.AbstractText.forEach((it: any) => {
+  private get_Abstract(model: IModelPubMed): string {
+    let result: string[] = [];
+    model.MedlineCitation.Article.AbstractText?.forEach(it => {
       result.push(it.text);
     });
     return result.join("\n");
   }
-
-  getAuthorsInitials(MedlineCitation: any) {
-    var result: string[] = [];
-    MedlineCitation.Article.AuthorList.forEach((author: any) => {
-      result.push(author.LastName + ' ' + author.Initials);
+  private get_Affiliations(model: IModelPubMed): string {
+    let result: string[] = [];
+    model.MedlineCitation.Article.AuthorList?.forEach(author => {
+      author.AffiliationInfo?.forEach(item => {
+        if (item.Affiliation != null) {
+          if (-1 === result.indexOf(item.Affiliation )) {
+            result.push(item.Affiliation);
+          }
+        }
+      });
     });
-    return result.join(", ");
+    return result.join("; ");
   }
-
-  getAuthorsFullName(MedlineCitation: any) {
-    var result: string[] = [];
-    MedlineCitation.Article.AuthorList.forEach((author: any) => {
+  private get_Author_fullname(model: IModelPubMed): string {
+    let result: string[] = [];
+    model.MedlineCitation.Article.AuthorList?.forEach(author => {
       result.push(author.ForeName + ' ' + author.LastName);
     });
     return result.join(", ");
   }
-
-  getAffiliations(MedlineCitation: any) {
-    var result: string[] = [];
-    MedlineCitation.Article.AuthorList.forEach((author: any) => {
-      author.AffiliationInfo.forEach((item: any) => {
-        if (result.indexOf(item.Affiliation) === -1) {
-          result.push(item.Affiliation);
-        }
-      });
+  private get_Author_initials(model: IModelPubMed): string {
+    let result: string[] = [];
+    model.MedlineCitation.Article.AuthorList?.forEach(author => {
+      result.push(author.LastName + ' ' + author.Initials);
     });
-    return result.join("; ");
+    return result.join(", ");
   }
-
-  getGlossary(MedlineCitation: any) {
-    var result: string[] = [];
-    MedlineCitation.KeywordList.forEach((keyword: any) => {
-      result.push(keyword.text);
+  private get_Categories(model: IModelPubMed): string {
+    let result: string[] = [];
+    model.MedlineCitation.Article.PublicationTypeList.forEach(pubType => {
+      result.push(pubType.text);
     });
-    return result.join("; ");
+    return result.join(" ");
   }
-
-  getDOI(PubmedData: any) {
-    PubmedData.ArticleIdList.forEach((articleID: any) => {
-      if (articleID.IdType == 'doi') {
+  private get_DOI(model: IModelPubMed): string {
+    for (let articleID of model.PubmedData.ArticleIdList) {
+      if (articleID.IdType === 'doi') {
         return articleID.text;
       }
-    });
+    }
     return '';
   }
-
-  getRefIds(PubmedData: any) {
-    var result: number[] = [];
-    PubmedData.ReferenceList.forEach((ref: any) => {
-      let pmid = 0;
-      ref.ArticleIdList.forEach((articleID: any) => {
-        if (articleID.IdType == 'pubmed') {
-          pmid = articleID.text;
+  private get_Glossary(model: IModelPubMed): string {
+    let result: string[] = [];
+    model.MedlineCitation.KeywordList?.forEach(keyword => {
+      if (keyword.text != null) {
+        result.push(keyword.text);
+      }
+    });
+    return result.join("; ");
+  }
+  private get_PMCID(model: IModelPubMed): string {
+    for (let articleID of model.PubmedData.ArticleIdList) {
+      if (articleID.IdType === 'pmc') {
+        return articleID.text;
+      }
+    }
+    return '';
+  }
+  private get_RefIds(model: IModelPubMed): number[] {
+    let result: number[] = [];
+    model.PubmedData.ReferenceList?.forEach(ref => {
+      let pmid: number = 0;
+      ref.ArticleIdList.forEach(articleID => {
+        if (articleID.IdType === 'pubmed') {
+          pmid = +articleID.text;
         }
       });
-      if (pmid != 0) {
+      if (pmid !== 0) {
         result.push(pmid);
       }
     });
     return result;
   }
-
-  getReferences(PubmedData: any) {
-    var result: string[] = [];
-    PubmedData.ReferenceList.forEach((ref: any) => {
-      var pmid = 0;
-      ref.ArticleIdList.forEach((articleID: any) => {
-        if (articleID.IdType == 'pubmed') {
-          pmid = articleID.text;
+  private get_References(model: IModelPubMed): string[] {
+    let result: string[] = [];
+    model.PubmedData.ReferenceList?.forEach(ref => {
+      let pmid: number = 0;
+      ref.ArticleIdList.forEach(articleID => {
+        if (articleID.IdType === 'pubmed') {
+          pmid = +articleID.text;
         }
       });
-      if (pmid == 0) {
+      if (pmid === 0) {
         result.push(ref.Citation);
       }
     });

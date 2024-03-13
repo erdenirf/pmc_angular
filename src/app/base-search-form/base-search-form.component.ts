@@ -9,14 +9,12 @@ import {FormControl, FormGroup, Validators} from "@angular/forms";
 })
 export class BaseSearchFormComponent {
 
-  protected Title = "Базовый компонент формы";
-  protected countries = jsonData.countries;
-  protected formSubmitted = false;
+  protected Title: string = "Базовый компонент формы";
+  protected countries: string[] = jsonData.countries;
+  protected formSubmitted: boolean = false;
   protected data: any = null;
   protected error: string = '';
   protected loading: boolean = false;
-  protected data_models: any[] = [];
-  protected total: number = 0;
 
   protected myForm = new FormGroup({
     quartile: new FormControl('0', {nonNullable: true, validators: Validators.required}),

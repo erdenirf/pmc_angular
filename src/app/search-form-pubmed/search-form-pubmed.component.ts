@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {BaseSearchFormComponent} from "../base-search-form/base-search-form.component";
-import ModelPubMed from "../models/ModelPubMed";
 import {ApiPubmedService} from "../services/api-pubmed.service";
+import PubmedJson from "../models/ModelPubMed";
 
 @Component({
   selector: 'app-search-form-pubmed',
@@ -9,6 +9,7 @@ import {ApiPubmedService} from "../services/api-pubmed.service";
   styleUrl: './search-form-pubmed.component.scss'
 })
 export class SearchFormPubmedComponent extends BaseSearchFormComponent {
+  Model: PubmedJson = new PubmedJson();
   constructor(private apiPubmedService: ApiPubmedService) {
     super();
 
@@ -32,8 +33,6 @@ export class SearchFormPubmedComponent extends BaseSearchFormComponent {
     this.data = null;
     this.error = '';
     this.loading = true;
-    this.data_models = [];
-    this.total = 0;
 
     this.apiPubmedService.fetchData(search_text, filter_quartile, filter_country, size, page).subscribe({
       next: (response) => {
@@ -41,17 +40,7 @@ export class SearchFormPubmedComponent extends BaseSearchFormComponent {
         this.error = '';
         this.loading = false;
 
-        this.total = this.data.total.value;
-        this.data.hits.forEach((element: any) => {
-          const source = element._source;
-          const obj = new ModelPubMed(
-            {
-              "MedlineCitation": source.MedlineCitation,
-              "PubmedData": source.PubmedData,
-              "DateEntrez": source.DateEntrez
-            });
-          this.data_models.push(obj);
-        });
+        this.Model = Object.assign(new PubmedJson(), this.data);
 
       },
       error: (error) => {
@@ -62,5 +51,4 @@ export class SearchFormPubmedComponent extends BaseSearchFormComponent {
       }
     });
   }
-
 }
