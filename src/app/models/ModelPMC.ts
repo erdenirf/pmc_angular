@@ -1,4 +1,5 @@
-import {IModel} from "./IModel";
+import {IModel, IModelGetter} from "./IModel";
+import {IElasticSearchJson, IHits, ITotal} from "./IElasticSearchJson";
 
 interface IJournal {
   nlm?: string,
@@ -51,24 +52,20 @@ interface IModelPMC {
   Ref_ids?: IPubmedid[],
   References?: IPaper[],
 }
-interface ITotal {
-  value: number,
-  relation: string,
-}
-interface IHits {
+interface IHitsPMC extends IHits{
   _index: string,
   _id: string,
   _score: number,
   _source: IModelPMC,
 }
-interface IPMCJson {
+interface IPMCJson extends IElasticSearchJson, IModelGetter {
   total: ITotal,
   max_score: number,
-  hits: IHits[],
+  hits: IHitsPMC[],
   get_1D_sources(): IModel[],
 }
 export default class ModelPMCJson implements IPMCJson{
-  hits: IHits[] = [];
+  hits: IHitsPMC[] = [];
   max_score: number = 0;
   total: ITotal = {
     value: 0,

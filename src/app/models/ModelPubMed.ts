@@ -1,4 +1,5 @@
-import {IModel} from './IModel';
+import {IModel, IModelGetter} from './IModel';
+import {IElasticSearchJson, IHits, ITotal} from "./IElasticSearchJson";
 
 interface IDateRevised {
   Year: string,
@@ -120,24 +121,20 @@ interface IModelPubMed {
   PubmedData: IPubmedData,
   DateEntrez: string,
 }
-interface IHits {
+interface IHitsPubmed extends IHits{
   _index: string,
   _id: string,
   _score: number,
   _source: IModelPubMed,
 }
-interface ITotal {
-  value: number,
-  relation: string,
-}
-interface IPubmedJson {
+interface IPubmedJson extends IElasticSearchJson, IModelGetter {
   total: ITotal,
   max_score: number,
-  hits: IHits[],
+  hits: IHitsPubmed[],
   get_1D_sources(): IModel[],
 }
 export default class ModelPubmedJson implements IPubmedJson{
-  hits: IHits[] = [];
+  hits: IHitsPubmed[] = [];
   max_score: number = 0;
   total: ITotal = {
     value: 0,
