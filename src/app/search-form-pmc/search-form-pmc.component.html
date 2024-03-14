@@ -42,12 +42,12 @@
   </div>
   <div *ngIf="data">
     <!-- Здесь ваша логика отображения данных -->
-    @if (Model.total.value > 0) {
+    @if (ModelElastic.total.value > 0) {
       <div class="result-total">
-        <p>Найдено значений: {{Model.total.value}} (Ограничение 10000 шт.)</p>
+        <p>Найдено значений: {{ModelElastic.total.value}} (Ограничение 10000 шт.)</p>
       </div>
     }
-    <div class="result-row" *ngFor="let model of Model.get_1D_sources(); let idx = index">
+    <div class="result-row" *ngFor="let model of Models; let idx = index;">
       <p>{{idx+1}}. <a href="/PMC/{{model.PMCID}}" target="_blank">{{model.Title}}</a></p>
       <p>{{model.Author_initials}}</p>
       <p>{{model.journal_nlm}}. {{model.date_epub}}; {{model.book_volume}}({{model.book_issue}}): {{model.book_first_page}}. doi: {{model.DOI}}</p>

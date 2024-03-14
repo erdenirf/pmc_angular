@@ -1,4 +1,4 @@
-export interface IModel {
+export interface IBaseModel {
   Abstract: string,
   Affiliations: string,
   Author_fullname: string,
@@ -25,6 +25,6 @@ export interface IModel {
   journal_longname: string,
   journal_nlm: string,
 }
-export interface IModelGetter {
-  get_1D_sources(): IModel[],
+export interface IModelGetterArray {
+  get_1D_sources(): IBaseModel[],
 }

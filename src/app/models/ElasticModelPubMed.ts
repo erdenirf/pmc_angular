@@ -1,149 +1,30 @@
-import {IModel, IModelGetter} from './IModel';
+import {IBaseModel, IModelGetterArray} from './IBaseModel';
 import {IElasticSearchJson, IHits, ITotal} from "./IElasticSearchJson";
+import {IModelPubMed} from "./IModelPubmed";
 
-interface IDateRevised {
-  Year: string,
-  Month: string,
-  Day: string
-}
-interface IPubDate {
-  Year?: string,
-  Month?: string,
-  Day?: string,
-}
-interface IJournalIssue {
-  Volume?: string,
-  Issue?: string,
-  PubDate: IPubDate,
-}
-interface IJournal {
-  ISOAbbreviation: string,
-  Title: string,
-  JournalIssue: IJournalIssue,
-  ISSN_Print?: string,
-  ISSN_Electronic?: string,
-}
-interface IAffiliation {
-  Affiliation?: string,
-}
-interface IAuthor {
-  LastName?: string,
-  ForeName?: string,
-  Initials?: string,
-  AffiliationInfo?: IAffiliation[],
-}
-interface IELocationID {
-  EIdType?: string,
-  text?: string,
-}
-interface IPublicationType {
-  UI: string,
-  text: string,
-}
-interface IAbstractText {
-  Label?: string,
-  NlmCategory?: string,
-  text: string,
-}
-interface IArticle {
-  Journal: IJournal,
-  ArticleTitle: string,
-  Pagination?: string,
-  ELocationID?: IELocationID[],
-  AbstractText?: IAbstractText[],
-  CopyrightInformation?: string,
-  AuthorList?: IAuthor[],
-  PublicationTypeList: IPublicationType[]
-}
-interface IMedlineJournalInfo {
-  MedlineTA: string,
-  NlmUniqueID: string,
-  Country?: string,
-  ISSNLinking?: string,
-}
-interface IMeshHeading {
-  UI?: string,
-  text?: string,
-}
-interface IKeyword {
-  text?: string,
-}
-interface ICommentsCorrections {
-  RefType?: string,
-  RefSource?: string,
-  PMID: string,
-}
-interface INameOfSubstance {
-  UI: string,
-  text: string,
-}
-interface IChemical {
-  RegistryNumber: string,
-  NameOfSubstance: INameOfSubstance,
-}
-interface IMedlineCitation {
-  PMID: number,
-  DateRevised: IDateRevised,
-  Article: IArticle,
-  MedlineJournalInfo: IMedlineJournalInfo,
-  MeshHeadingList?: IMeshHeading[],
-  KeywordList?: IKeyword[],
-  CommentsCorrectionsList?: ICommentsCorrections[],
-  ChemicalList?: IChemical[],
-}
-interface IPubMedPubDate {
-  Year: string,
-  Month: string,
-  Day: string,
-  Hour: string,
-  Minute: string,
-  PubStatus?: string,
-}
-interface IArticleId {
-  IdType: string,
-  text: string,
-}
-interface IArticleId {
-  IdType: string,
-  text: string,
-}
-interface IReference {
-  Citation: string,
-  ArticleIdList: IArticleId[],
-}
-interface IPubmedData {
-  History: IPubMedPubDate[],
-  ArticleIdList: IArticleId[],
-  ReferenceList?: IReference[],
-}
-interface IModelPubMed {
-  MedlineCitation: IMedlineCitation,
-  PubmedData: IPubmedData,
-  DateEntrez: string,
-}
 interface IHitsPubmed extends IHits{
   _index: string,
   _id: string,
   _score: number,
   _source: IModelPubMed,
 }
-interface IPubmedJson extends IElasticSearchJson, IModelGetter {
+interface IElasticPubmed extends IElasticSearchJson, IModelGetterArray {
   total: ITotal,
   max_score: number,
   hits: IHitsPubmed[],
-  get_1D_sources(): IModel[],
+  get_1D_sources(): IBaseModel[],
 }
-export default class ModelPubmedJson implements IPubmedJson{
+export default class ElasticModelPubmed implements IElasticPubmed{
   hits: IHitsPubmed[] = [];
   max_score: number = 0;
   total: ITotal = {
     value: 0,
     relation: "gte",
   };
-  public get_1D_sources(): IModel[] {
-    let result: IModel[] = [];
+  public get_1D_sources(): IBaseModel[] {
+    let result: IBaseModel[] = [];
     this.hits.forEach(element => {
-      let model: IModel = {
+      let model: IBaseModel = {
         "Abstract": this.get_Abstract(element._source),
         "Affiliations": this.get_Affiliations(element._source),
         "Author_fullname": this.get_Author_fullname(element._source),

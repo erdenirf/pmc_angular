@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import { BaseSearchFormComponent } from '../base-search-form/base-search-form.component';
 import {ApiPmcService} from "../services/api-pmc.service";
-import ModelPMCJson from "../models/ModelPMC";
+import ElasticModelPMC from "../models/ElasticModelPMC";
+import BaseModel from "../models/BaseModel";
 
 @Component({
   selector: 'app-search-form-pmc',
@@ -9,7 +10,8 @@ import ModelPMCJson from "../models/ModelPMC";
   styleUrl: './search-form-pmc.component.scss'
 })
 export class SearchFormPmcComponent extends BaseSearchFormComponent {
-  Model: ModelPMCJson = new ModelPMCJson();
+  ModelElastic: ElasticModelPMC = new ElasticModelPMC();
+  Models: BaseModel[] = [];
   constructor(private apiPmcService: ApiPmcService) {
     super();
 
@@ -39,8 +41,11 @@ export class SearchFormPmcComponent extends BaseSearchFormComponent {
         this.data = response;
         this.error = '';
         this.loading = false;
-        this.Model = Object.assign(new ModelPMCJson(), this.data);
-
+        this.ModelElastic = Object.assign(new ElasticModelPMC(), this.data);
+        for (let model of this.ModelElastic.hits) {
+          let baseModel: BaseModel = Object.assign(new BaseModel(), model._source)
+          this.Models.push(baseModel);
+        }
       },
       error: (error) => {
         console.error('Error fetching data:', error);
