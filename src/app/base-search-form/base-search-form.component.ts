@@ -16,6 +16,12 @@ export class BaseSearchFormComponent {
   protected error: string = '';
   protected loading: boolean = false;
 
+  protected search_text: string = '';
+  protected filter_quartile: number = 0;
+  protected filter_country: string = '';
+  protected size: number = 20;
+  protected page: number = 0;
+
   protected myForm = new FormGroup({
     quartile: new FormControl('0', {nonNullable: true, validators: Validators.required}),
     text: new FormControl('', {nonNullable: true, validators: Validators.required}),

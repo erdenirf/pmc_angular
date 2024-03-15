@@ -42,9 +42,9 @@
   </div>
   <div *ngIf="data">
     <!-- Здесь ваша логика отображения данных -->
-    @if (ModelElastic.total.value > 0) {
+    @if (ResponseElastic.total.value > 0) {
       <div class="result-total">
-        <p>Найдено значений: {{ModelElastic.total.value}} (Ограничение 10000 шт.)</p>
+        <p>Найдено значений: {{ResponseElastic.total.value}} (Ограничение 10000 шт.)</p>
       </div>
     }
     <div class="result-row" *ngFor="let model of Models; let idx = index;">
@@ -57,6 +57,13 @@
         }
       </p>
     </div>
+    @if (page+1 < Math.ceil(ResponseElastic.total.value / size)) {
+      <div>
+        <div class="center">
+          <button class="btn btn-outline-success" (click)="onNextPageButton()">Показать еще...</button>
+        </div>
+      </div>
+    }
   </div>
   <div *ngIf="error">
     {{ error }}

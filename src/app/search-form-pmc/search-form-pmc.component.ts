@@ -11,7 +11,7 @@ import {ModelPMC} from "../models/ModelPMC";
   styleUrl: './search-form-pmc.component.scss'
 })
 export class SearchFormPmcComponent extends BaseSearchFormComponent {
-  ModelElastic: ElasticModelPMC = new ElasticModelPMC();
+  ResponseElastic: ElasticModelPMC = new ElasticModelPMC();
   Models: BaseModel[] = [];
   constructor(private apiPmcService: ApiPmcService) {
     super();
@@ -23,12 +23,19 @@ export class SearchFormPmcComponent extends BaseSearchFormComponent {
     this.formSubmitted = true;
 
     if (this.myForm.valid) {
-      console.log(this.myForm.value)
-      const text_val = this.myForm.controls.text.value
-      const quartile_val = this.myForm.controls.quartile.value
-      const country_val = this.myForm.controls.country.value;
-      this.fetchData(text_val, +quartile_val, country_val);
+      //console.log(this.myForm.value)
+      this.search_text = this.myForm.controls.text.value
+      this.filter_quartile = +this.myForm.controls.quartile.value
+      this.filter_country = this.myForm.controls.country.value;
+      this.page = 0;
+      this.Models = [];
+      this.fetchData(this.search_text, this.filter_quartile, this.filter_country, this.size, this.page);
     }
+  }
+
+  public onNextPageButton() {
+    this.page++;
+    this.fetchData(this.search_text, this.filter_quartile, this.filter_country, this.size, this.page);
   }
 
   protected override fetchData(search_text: string, filter_quartile: number = 0, filter_country: string = '', size: number = 20, page: number = 0) {
@@ -42,10 +49,9 @@ export class SearchFormPmcComponent extends BaseSearchFormComponent {
         this.data = response;
         this.error = '';
         this.loading = false;
-        this.ModelElastic = Object.assign(new ElasticModelPMC(), this.data);
-        for (let model of this.ModelElastic.hits) {
-          let modelpmc = Object.assign(new ModelPMC(), model._source);
-          let baseModel = modelpmc.convert();
+        this.ResponseElastic = Object.assign(new ElasticModelPMC(), this.data);
+        for (let model of this.ResponseElastic.hits) {
+          let baseModel = Object.assign(new ModelPMC(), model._source).convert();
           this.Models.push(baseModel);
         }
       },
@@ -57,4 +63,6 @@ export class SearchFormPmcComponent extends BaseSearchFormComponent {
       }
     });
   }
+
+  protected readonly Math = Math;
 }
