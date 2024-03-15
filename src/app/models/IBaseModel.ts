@@ -25,6 +25,3 @@ export interface IBaseModel {
   journal_longname: string,
   journal_nlm: string,
 }
-export interface IModelGetterArray {
-  get_1D_sources(): IBaseModel[],
-}

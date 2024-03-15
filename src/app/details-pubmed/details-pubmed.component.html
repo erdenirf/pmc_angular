@@ -1,1 +1,35 @@
-<p>details-pubmed works!</p>
+<h1>Подробнее {{id}}</h1>
+<!--<pre>{{ Model | json }}</pre>-->
+
+<div>
+  <h2>{{Model.Title}}</h2>
+  <div>
+    <div class="col-6 d-inline-block">
+      <p>{{Model.journal_nlm}}. {{Model.date_epub}}; {{Model.book_volume}}({{Model.book_issue}}): {{Model.book_first_page}}. doi: {{Model.DOI}}</p>
+    </div>
+    <div class="col-4 d-inline-block">
+      <p>PMCID: {{Model.PMCID}} PMID: {{Model.PMID}}</p>
+    </div>
+  </div>
+  <div>
+    <p>Authors: {{Model.Author_fullname}}</p>
+    <p>Affiliations: {{Model.Affiliations}}</p>
+  </div>
+  <div>
+    <h2>Abstract</h2>
+    <p>{{Model.Abstract}}</p>
+  </div>
+  <div>
+    <h2>Full text</h2>
+    <p>{{Model.Text_full}}</p>
+  </div>
+  <div>
+    <h2>Glossary</h2>
+    <p>{{Model.Glossary}}</p>
+  </div>
+  <div>
+    <h2>References</h2>
+    <p *ngFor="let reference of Model.References">{{reference}}</p>
+    <p *ngFor="let ref_id of Model.Ref_ids"><a href="https://pubmed.ncbi.nlm.nih.gov/{{ref_id}}">https://pubmed.ncbi.nlm.nih.gov/{{ref_id}}</a></p>
+  </div>
+</div>

@@ -3,6 +3,7 @@ import { BaseSearchFormComponent } from '../base-search-form/base-search-form.co
 import {ApiPmcService} from "../services/api-pmc.service";
 import ElasticModelPMC from "../models/ElasticModelPMC";
 import BaseModel from "../models/BaseModel";
+import {ModelPMC} from "../models/ModelPMC";
 
 @Component({
   selector: 'app-search-form-pmc',
@@ -43,7 +44,8 @@ export class SearchFormPmcComponent extends BaseSearchFormComponent {
         this.loading = false;
         this.ModelElastic = Object.assign(new ElasticModelPMC(), this.data);
         for (let model of this.ModelElastic.hits) {
-          let baseModel: BaseModel = Object.assign(new BaseModel(), model._source)
+          let modelpmc = Object.assign(new ModelPMC(), model._source);
+          let baseModel = modelpmc.convert();
           this.Models.push(baseModel);
         }
       },

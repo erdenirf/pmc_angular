@@ -113,7 +113,7 @@ export interface IPubmedData {
   ArticleIdList: IArticleId[],
   ReferenceList?: IReference[],
 }
-export interface IModelPubMed {
+export interface IModelPubmed {
   MedlineCitation: IMedlineCitation,
   PubmedData: IPubmedData,
   DateEntrez: string,

@@ -2,6 +2,8 @@ import {Component} from '@angular/core';
 import {BaseSearchFormComponent} from "../base-search-form/base-search-form.component";
 import {ApiPubmedService} from "../services/api-pubmed.service";
 import ElasticModelPubmed from "../models/ElasticModelPubMed";
+import BaseModel from "../models/BaseModel";
+import {ModelPubmed} from "../models/ModelPubmed";
 
 @Component({
   selector: 'app-search-form-pubmed',
@@ -9,7 +11,8 @@ import ElasticModelPubmed from "../models/ElasticModelPubMed";
   styleUrl: './search-form-pubmed.component.scss'
 })
 export class SearchFormPubmedComponent extends BaseSearchFormComponent {
-  Model: ElasticModelPubmed = new ElasticModelPubmed();
+  ModelElastic: ElasticModelPubmed = new ElasticModelPubmed();
+  Models: BaseModel[] = [];
   constructor(private apiPubmedService: ApiPubmedService) {
     super();
 
@@ -39,8 +42,12 @@ export class SearchFormPubmedComponent extends BaseSearchFormComponent {
         this.data = response;
         this.error = '';
         this.loading = false;
-        this.Model = Object.assign(new ElasticModelPubmed(), this.data);
-
+        this.ModelElastic = Object.assign(new ElasticModelPubmed(), this.data);
+        for (let model of this.ModelElastic.hits) {
+          let modelpubmed = Object.assign(new ModelPubmed(), model._source);
+          let baseModel = modelpubmed.convert();
+          this.Models.push(baseModel);
+        }
       },
       error: (error) => {
         console.error('Error fetching data:', error);
