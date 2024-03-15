@@ -31,6 +31,7 @@ export class ModelPubmed implements IModelPubmed, BaseModelGetter {
     History: []
   };
   DateEntrez: string = '0000-00-00';
+
   convert(): BaseModel {
     return new BaseModel(
       this.get_Abstract(),
